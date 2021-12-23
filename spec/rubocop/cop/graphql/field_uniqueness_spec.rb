@@ -100,4 +100,24 @@ RSpec.describe RuboCop::Cop::GraphQL::FieldUniqueness do
       RUBY
     end
   end
+
+  context "when duplicated field belongs to anonymous classes" do
+    it "does not register an offense" do
+      expect_no_offenses(<<~RUBY)
+        class MyTest
+          class UserType < BaseType
+            field :name, String
+          end
+
+          Class.new(BaseType) do
+            field :name, String
+          end
+
+          Class.new(BaseType) do
+            field :name, String
+          end
+        end
+      RUBY
+    end
+  end
 end
